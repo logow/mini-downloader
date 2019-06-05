@@ -109,14 +109,12 @@ public class HttpClientEngine extends DownloadEngine {
 
     private FileEntity initFileEntity(DownloadContext context, HttpResponse resp) {
         DownloadTask task = context.getDownloadTask();
+        String filename = resolveFilename(task.getUrl(), resp);
         String path = null;
-        String filename = task.getFilename();
-        if (filename == null) {
-            filename = resolveFilename(task.getUrl(), resp);
-            filename = Utils.uniqueFilename(task.getSavePath(), filename);
-            path = new File(task.getSavePath(), filename).getAbsolutePath();
+        if (task.getFilename() == null) {
+            String ufn = Utils.uniqueFilename(task.getSavePath(), filename);
+            path = new File(task.getSavePath(), ufn).getAbsolutePath();
         } else {
-            filename = resolveDownloadHeader(resp);
             path = new File(task.getSavePath(), task.getFilename()).getAbsolutePath();
         }
 
