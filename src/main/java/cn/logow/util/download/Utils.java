@@ -47,26 +47,46 @@ public final class Utils {
     }
 
     public static String resolveFilename(String url) {
-        return resolveFilename(URI.create(url));
+        return resolveFilename(resolveURL(url));
     }
 
     public static String resolveFilename(URI uri) {
-        String baseName = FilenameUtils.getBaseName(uri.getPath());
-        if (baseName == null || baseName.isEmpty()) {
+        String path = uri.getPath();
+        String baseName = getBaseName(path);
+        if (baseName == null) {
             return null;
         }
 
-        String query = uri.getQuery();
-        if (query != null && query.length() > 0) {
-            baseName = baseName + "_" + System.currentTimeMillis();
-        }
-
-        String extension = FilenameUtils.getExtension(uri.getPath());
-        if (extension != null && extension.length() > 0) {
-            return baseName + "." + extension;
-        } else {
+        String extension = getExtension(path);
+        if (extension == null) {
             return baseName;
         }
+
+        return baseName + "." + extension;
+    }
+
+    public static String uniqueFilename(String dirPath, String filename) {
+        String fn = filename;
+        File file =  new File(dirPath, fn);
+        if (file.exists()) {
+            String baseName = getBaseName(filename);
+            String extension = getExtension(filename);
+            int num = 1;
+            do {
+                fn = baseName + "_" + (++num) + (extension != null ? "." + extension : "");
+                file = new File(dirPath, fn);
+            } while (file.exists());
+        }
+        return fn;
+    }
+
+    public static String getBaseName(String filename) {
+        return FilenameUtils.getBaseName(filename);
+    }
+
+    public static String getExtension(String filename) {
+        String extension = FilenameUtils.getExtension(filename);
+        return extension != null && extension.isEmpty() ? null : extension;
     }
 
     /**

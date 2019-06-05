@@ -113,7 +113,8 @@ public class HttpClientEngine extends DownloadEngine {
         String filename = task.getFilename();
         if (filename == null) {
             filename = resolveFilename(task.getUrl(), resp);
-            path = new File(task.getSavePath(), filename).getPath();
+            filename = Utils.uniqueFilename(task.getSavePath(), filename);
+            path = new File(task.getSavePath(), filename).getAbsolutePath();
         } else {
             filename = resolveDownloadHeader(resp);
             path = new File(task.getSavePath(), task.getFilename()).getAbsolutePath();
