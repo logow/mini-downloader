@@ -1,8 +1,5 @@
 package cn.logow.util.download;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
-
 public class DefaultDownloadListener implements DownloadListener {
 
     @Override
@@ -21,12 +18,16 @@ public class DefaultDownloadListener implements DownloadListener {
     }
 
     @Override
-    public void onAbort(DownloadContext context, InterruptedIOException e) throws IOException {
-        throw e;
+    public void onCancel(DownloadContext context, int bytesTransferred) {
+
     }
 
     @Override
-    public void onError(DownloadContext context, IOException e) throws IOException {
-        throw e;
+    public void onError(DownloadContext context, Throwable e) throws DownloadException {
+        if (e instanceof DownloadException) {
+            throw (DownloadException)e;
+        } else {
+            throw new DownloadException(e);
+        }
     }
 }

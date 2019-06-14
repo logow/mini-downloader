@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 
 /**
@@ -31,10 +30,6 @@ public abstract class DownloadEngine implements AutoCloseable {
         try {
             fileEntity = doExecute(task, context);
         } catch (IOException e) {
-            if (InterruptedException.class.equals(e.getClass())) {
-                logger.warn("Aborting download {}", task, e);
-                task.onAbort(context, (InterruptedIOException) e);
-            }
             logger.error("Error download {}", task, e);
             task.onError(context, e);
         }
@@ -72,9 +67,7 @@ public abstract class DownloadEngine implements AutoCloseable {
         }
 
         if (n != -1) {
-            InterruptedIOException ioe = new InterruptedIOException("download interrupted");
-            ioe.bytesTransferred = transferred;
-            throw ioe;
+            context.getDownloadTask().onCancel(context, transferred);
         }
 
         return transferred;

@@ -109,13 +109,13 @@ public class DownloadTask implements DownloadListener {
     }
 
     @Override
-    public void onAbort(DownloadContext context, InterruptedIOException e) throws IOException {
+    public void onCancel(DownloadContext context, int bytesTransferred) {
         state = INTERRUPTED;
-        listener.onAbort(context, e);
+        listener.onCancel(context, bytesTransferred);
     }
 
     @Override
-    public void onError(DownloadContext context, IOException e) throws IOException {
+    public void onError(DownloadContext context, Throwable e) throws DownloadException {
         state = EXCEPTIONAL;
         listener.onError(context, e);
     }

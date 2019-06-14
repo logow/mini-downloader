@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -46,6 +45,11 @@ public class DownloaderTest {
         DownloadTask task = DownloadTask.create(url, file);
         final CountDownLatch latch = new CountDownLatch(1);
         task.bind(new DefaultDownloadListener() {
+            @Override
+            public void onProgress(DownloadContext context, int bytes, long timeMillis) {
+                float rate = (bytes / 1024.0f) / (timeMillis / 1000.0f);
+                System.out.printf("bytes=%d, time=%d, rate=%.2f KB/s%n", bytes, timeMillis, rate);
+            }
             @Override
             public void onComplete(DownloadContext context) {
                 latch.countDown();
@@ -86,12 +90,12 @@ public class DownloaderTest {
     }
 
     @Test
-    public void testDownloadInterrupt() throws Exception {
+    public void testDownloadCancel() throws Exception {
         DownloadTask task = DownloadTask.create(urlForDownloadInterrupt(), saveDir);
         final CountDownLatch latch = new CountDownLatch(1);
         task.bind(new DefaultDownloadListener() {
             @Override
-            public void onAbort(DownloadContext context, InterruptedIOException e) throws IOException {
+            public void onCancel(DownloadContext context, int bytesTransferred) {
                 latch.countDown();
             }
         });

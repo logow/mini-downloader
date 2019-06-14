@@ -1,8 +1,5 @@
 package cn.logow.util.download;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
-
 /**
  * 下载任务监听器
  */
@@ -29,18 +26,17 @@ public interface DownloadListener {
     void onComplete(DownloadContext context);
 
     /**
-     * 下载中止
+     * 下载取消
      * @param context
-     * @param e
-     * @throws IOException
+     * @param bytesTransferred
      */
-    void onAbort(DownloadContext context, InterruptedIOException e) throws IOException;
+    void onCancel(DownloadContext context, int bytesTransferred);
 
     /**
      * 下载异常
      * @param context
      * @param e
-     * @throws IOException
+     * @throws DownloadException
      */
-    void onError(DownloadContext context, IOException e) throws IOException;
+    void onError(DownloadContext context, Throwable e) throws DownloadException;
 }
